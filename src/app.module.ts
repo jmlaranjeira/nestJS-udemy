@@ -9,6 +9,8 @@ import { ReportsModule } from './reports/reports.module';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
 const cookieSession = require('cookie-session');
+import { TypeOrmConfigService } from './config/typeorm.config';
+// const dbConfig = require('../ormconfig.js');
 
 @Module({
   imports: [
@@ -18,16 +20,23 @@ const cookieSession = require('cookie-session');
     }),
 
     TypeOrmModule.forRootAsync({
-      inject: [ ConfigService ],
-      useFactory: (config: ConfigService) => {
-        return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
-          synchronize: true,
-          entities: [User, Report],
-        }
-      }
+      useClass: TypeOrmConfigService,
     }),
+
+    // Error video 161
+    // TypeOrmModule.forRoot(dbConfig),
+
+    // TypeOrmModule.forRootAsync({
+    //   inject: [ ConfigService ],
+    //   useFactory: (config: ConfigService) => {
+    //     return {
+    //       type: 'sqlite',
+    //       database: config.get<string>('DB_NAME'),
+    //       synchronize: true,
+    //       entities: [User, Report],
+    //     }
+    //   }
+    // }),
 
     // TypeOrmModule.forRoot({
     //   type: 'sqlite',
@@ -51,9 +60,12 @@ const cookieSession = require('cookie-session');
   ],
 })
 export class AppModule {
+  constructor(
+    private configService: ConfigService
+  ) {}
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(cookieSession({
-      keys: ['asdasd'],
+      keys: [this.configService.get('COOKIE_KEY')],
     })).forRoutes('*');
   }
 }
