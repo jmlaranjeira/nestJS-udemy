@@ -1,0 +1,24 @@
+##
+POST http://localhost:3000/reports
+Content-Type: application/json
+
+{
+    "make": "Ford",
+    "model": "Kuga",
+    "year": 2020,
+    "mileage": 10000,
+    "lng": 40,
+    "lat": 40,
+    "price": 40000
+}
+
+### Approve an existing Report
+PATCH http://localhost:3000/reports/5
+Content-Type: application/json
+
+{
+    "approved": true
+}
+
+### Get an estimate for an existing vehicle
+GET http://localhost:3000/reports?make=Ford&model=Kuga&lng=40&lat=40&mileage=9000&year=2020
